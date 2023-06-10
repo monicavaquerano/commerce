@@ -1,7 +1,11 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h2>Active Listings</h2>
+<h2>Active Listings</h2>
 
-    TODO
+TODO
+<br>
+{% if user.is_authenticated %}
+<a class="nav-link" href="{% url 'add_listing' %}">Add Listing</a>
+{% endif %}
 {% endblock %}
