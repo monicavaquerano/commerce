@@ -26,7 +26,7 @@ class ListingsAdmin(admin.ModelAdmin):
         "duration",
         "is_active",
     )
-    filter_horizontal = ("category", "watchers")
+    filter_horizontal = ("watchers",)
 
 
 admin.site.register(User, UserAdmin)
