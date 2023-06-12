@@ -3,12 +3,16 @@
 {% block body %}
 
 {% if user.is_authenticated %}
-<p>{{ user.username }}</p>
-<br>
+<label for="">Username: </label>
+<p>{{ user.get_username }}</p>
+
+<label for="">First Name: </label>
 <p>{{ user.first_name }}</p>
-<br>
+
+<label for="">Last name: </label>
 <p>{{ user.last_name }}</p>
-<br>
+
+<label for="">Email: </label>
 <p>{{ user.email }}</p>
 {% else %}
 
