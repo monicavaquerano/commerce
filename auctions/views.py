@@ -67,7 +67,11 @@ def register(request):
 
 
 def add_listing(request):
+    return render(request, "auctions/listing.html")
+
+
+def edit_user(request):
     return render(
         request,
-        "auctions/listing.html",
+        "auctions/user.html",
     )

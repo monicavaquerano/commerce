@@ -1,0 +1,20 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+{% if user.is_authenticated %}
+<p>{{ user.username }}</p>
+<br>
+<p>{{ user.first_name }}</p>
+<br>
+<p>{{ user.last_name }}</p>
+<br>
+<p>{{ user.email }}</p>
+{% else %}
+
+<br>
+<p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
+
+{% endif %}
+
+{% endblock %}

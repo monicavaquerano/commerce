@@ -3,33 +3,11 @@ from .models import User, Listings, Comments, Bids, Category
 
 
 # Register your models here.
-class UserAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "username",
-        "email",
-        "password",
-    )
-
-
 class ListingsAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "title",
-        "description",
-        "image",
-        "category",
-        "start_bid",
-        "user",
-        "start_date",
-        "end_date",
-        "duration",
-        "is_active",
-    )
     filter_horizontal = ("watchers",)
 
 
-admin.site.register(User, UserAdmin)
+admin.site.register(User)
 admin.site.register(Listings, ListingsAdmin)
 admin.site.register(Category)
 admin.site.register(Bids)
