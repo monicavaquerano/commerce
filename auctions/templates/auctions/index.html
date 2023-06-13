@@ -3,8 +3,20 @@
 {% block body %}
 <h2>Active Listings</h2>
 {% for listing in listings %}
-<br>
-<h3>{{ listing }}</h3>
+<div class="container-fluid">
+    <div class="flex-container">
+        <div class="card mb-3">
+            <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ listing.title }}</h5>
+                <h6 class="card-text"><strong>Price: </strong>${{ listing.start_bid }}</h5>
+                    <p class="card-text">{{ listing.description }}.</p>
+                    <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small></p>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% empty %}
 <br>
 <h3>There are no active listings.</h3>

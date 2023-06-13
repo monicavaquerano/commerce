@@ -70,6 +70,21 @@ def register(request):
         return render(request, "auctions/register.html")
 
 
+def create_categories(request):
+    if request.method == "GET":
+        categories = Category.objects.all()
+        return render(request, "auctions/categories.html", {"categories": categories})
+    else:
+        category = request.POST["category"]
+        new_category = Category(name=category)
+        new_category.save()
+        return HttpResponseRedirect(
+            reverse(
+                "categories",
+            )
+        )
+
+
 def create_listing(request):
     if request.method == "GET":
         categories = Category.objects.all()
