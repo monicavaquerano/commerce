@@ -14,8 +14,14 @@
 
 <label for="">Email: </label>
 <p>{{ user.email }}</p>
-{% else %}
 
+{% if message %}
+
+{{ message }}
+
+{% endif %}
+
+{% else %}
 <br>
 <p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
 

@@ -25,7 +25,7 @@ class Listings(models.Model):
     start_bid = models.DecimalField(
         max_digits=8, decimal_places=2, validators=[MinValueValidator(0.01)]
     )
-    image_url = models.URLField(blank=True)
+    image = models.URLField(blank=True)
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, related_name="listings", null=True
     )

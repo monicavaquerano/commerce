@@ -2,11 +2,17 @@
 
 {% block body %}
 <h2>Active Listings</h2>
+{% for listing in listings %}
+<br>
+<h3>{{ listing }}</h3>
+{% empty %}
+<br>
+<h3>There are no active listings.</h3>
 
-TODO
+{% endfor %}
 <br>
 {% if user.is_authenticated %}
-<a class="nav-link" href="{% url 'add_listing' %}">Add Listing</a>
+<a class="nav-link" href="{% url 'create' %}">Add Listing</a>
 <a class="nav-link" href="{% url 'user' %}">User</a>
 {% endif %}
 {% endblock %}

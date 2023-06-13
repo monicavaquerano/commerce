@@ -25,12 +25,14 @@
                     </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_listing' %}">Add Listing</a>
+                        <a class="nav-link" href="{% url 'create' %}">Create Listing</a>
                     </li>
                     <li class="nav-item">
                         <div class="nav-link">
                             {% if user.is_authenticated %}
-                            Signed in as <strong>{{ user.username }}</strong>.
+                            Signed in as
+                            <a class="link-body-emphasis" href="{% url 'user' %}">
+                                <strong>{{ user.username }}</strong>.</a>
                             {% else %}
                             Not signed in.
                             {% endif %}
@@ -51,39 +53,6 @@
             </div>
         </div>
     </nav>
-
-
-    <!-- 
-    <h1>Auctions</h1>
-    <div>
-        {% if user.is_authenticated %}
-        Signed in as <strong>{{ user.username }}</strong>.
-        {% else %}
-        Not signed in.
-        {% endif %}
-    </div>
-    <ul class="nav">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-        </li>
-        {% if user.is_authenticated %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'add_listing' %}">Add Listing</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-        </li>
-        {% else %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'register' %}">Register</a>
-        </li>
-        {% endif %}
-    </ul> 
--->
-
     <hr>
 
     {% block body %}
