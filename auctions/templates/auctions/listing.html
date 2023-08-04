@@ -1,8 +1,48 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Create Listing</h2>
+<h2>Create New Listing</h2>
 
-TODO - Form agregar la forma de agregado
+<div class="container my-5">
+    <form action="{% url 'create' %}" method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" id="title" aria-describedby="titleHelp">
+            <div id="titleHelp" class="form-text">Title of your listing. Keep it short and catchy.</div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" name="description" class="form-control" id="description"
+                aria-describedby="descriptionHelp">
+            <div id="descriptionHelp" class="form-text">Describe your product in less than 300 words.</div>
+        </div>
+        <div class="mb-3">
+            <label for="start_bid" class="form-label">Start Bid</label>
+            <input type="number" name="start_bid" class="form-control" id="start_bid" min="1"
+                aria-describedby="start_bidHelp">
+            <div id="start_bidHelp" class="form-text">Starting price in USD.</div>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">Image</label>
+            <input type="text" name="image" class="form-control" id="image" aria-describedby="imageHelp">
+            <div id="imageHelp" class="form-text">Enter a URL link, e.g: "https://www.example.com/img/123/"</div>
+        </div>
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" name="category" aria-label="Select a category">
+                <option selected>Select a category</option>
+                {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Creat New Listing</button>
+    </form>
+</div>
 
 {% endblock %}

@@ -8,10 +8,3 @@ div>img {
     margin-right: auto;
     width: 100%;
 }
-
-.flex-container {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    background-color: whitesmoke;
-}

@@ -29,6 +29,7 @@ class Listings(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, related_name="listings", null=True
     )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="listings")
 
     watchers = models.ManyToManyField(User, blank=True, related_name="watchlist")

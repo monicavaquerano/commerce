@@ -4,18 +4,42 @@
 <h2>Active Listings</h2>
 {% for listing in listings %}
 <div class="container-fluid">
-    <div class="flex-container">
-        <div class="card mb-3">
-            <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ listing.title }}</h5>
-                <h6 class="card-text"><strong>Price: </strong>${{ listing.start_bid }}</h5>
+    <!-- 
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
                     <p class="card-text">{{ listing.description }}.</p>
-                    <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small></p>
+                    <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
+     -->
+
+    <div class="container">
+        <div class="product">
+            <div class="card my-3 h-100">
+                <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
+                <div class=" card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <h6 class="card-text"><strong>Price: </strong>${{ listing.start_bid }}</h5>
+                        <p class="card-text">{{ listing.description }}.</p>
+                        <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
+                        </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 </div>
+
+
 
 {% empty %}
 <br>
@@ -24,7 +48,7 @@
 {% endfor %}
 <br>
 {% if user.is_authenticated %}
-<a class="nav-link" href="{% url 'create' %}">Add Listing</a>
+<a class="nav-link" href="{% url 'create' %}">Create Listing</a>
 <a class="nav-link" href="{% url 'user' %}">User</a>
 {% endif %}
 {% endblock %}

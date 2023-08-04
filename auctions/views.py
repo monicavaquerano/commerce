@@ -94,7 +94,7 @@ def create_listing(request):
         title = request.POST["title"]
         description = request.POST["description"]
         start_bid = request.POST["start_bid"]
-        image_url = request.POST["image_url"]
+        image_url = request.POST["image"]
         category = request.POST["category"]
         # start_date = timezone.now()
 
