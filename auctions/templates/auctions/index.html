@@ -1,51 +1,53 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Active Listings</h2>
-{% for listing in listings %}
+
 <div class="container-fluid">
-    <!-- 
-    <div class="row row-cols-1 row-cols-md-2 g-4">
+    <h2>Active Listings</h2>
+    <form class="row g-3 my-1" action="{% url 'displayCategory' %}" method="post">
+        {% csrf_token %}
+        <div class="col-auto">
+            <label for="category" class="form-label">Choose a category</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select form-select-sm" name="category" aria-label="Select a category">
+                <!-- ARREGLAR ACÁ -->
+                <!-- <option selected disabled>Open category menu</option> -->
+                <!-- ARREGLAR ACÁ -->
+                {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm">Select</button>
+        </div>
+    </form>
+    <div class="row row-cols-1 row-cols-md-3 g-4 my-1">
+        {% for listing in listings %}
         <div class="col">
             <div class="card h-100">
                 <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
                     <p class="card-text">{{ listing.description }}.</p>
+                    <a href="{% url 'listing' id=listing.id %}" class="btn btn-primary">Listing details</a>
+                    <hr>
                     <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
                     </p>
                 </div>
             </div>
         </div>
+
+        {% empty %}
+
+        <br>
+
+        <h3>There are no active listings.</h3>
+
+        {% endfor %}
     </div>
-     -->
-
-    <div class="container">
-        <div class="product">
-            <div class="card my-3 h-100">
-                <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
-                <div class=" card-body">
-                    <h5 class="card-title">{{ listing.title }}</h5>
-                    <h6 class="card-text"><strong>Price: </strong>${{ listing.start_bid }}</h5>
-                        <p class="card-text">{{ listing.description }}.</p>
-                        <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
-                        </p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
 </div>
-
-
-
-{% empty %}
-<br>
-<h3>There are no active listings.</h3>
-
-{% endfor %}
 <br>
 {% if user.is_authenticated %}
 <a class="nav-link" href="{% url 'create' %}">Create Listing</a>

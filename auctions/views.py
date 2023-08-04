@@ -12,7 +12,54 @@ from .models import User, Category, Listings
 
 def index(request):
     active_listings = Listings.objects.filter(is_active=True)
-    return render(request, "auctions/index.html", {"listings": active_listings})
+    categories = Category.objects.all()
+
+    return render(
+        request,
+        "auctions/index.html",
+        {"listings": active_listings, "categories": categories},
+    )
+
+
+def listing(request, id):
+    listingData = Listings.objects.get(pk=id)
+    hasWatchers = request.user in listingData.watchers.all()
+    return render(
+        request,
+        "auctions/listing.html",
+        {
+            "listing": listingData,
+            "hasWatchers": hasWatchers,
+        },
+    )
+
+
+def addWatchlist(request, id):
+    listingData = Listings.objects.get(pk=id)
+    currentUser = request.user
+    listingData.watchers.add(currentUser)
+    return HttpResponseRedirect(reverse("listing", args=(id,)))
+
+
+def removeWatchlist(request, id):
+    listingData = Listings.objects.get(pk=id)
+    currentUser = request.user
+    listingData.watchers.remove(currentUser)
+    return HttpResponseRedirect(reverse("listing", args=(id,)))
+
+
+def displayCategory(request):
+    if request.method == "POST":
+        categoryFromForm = request.POST["category"]
+        category = Category.objects.get(name=categoryFromForm)
+        active_listings = Listings.objects.filter(is_active=True, category=category)
+        categories = Category.objects.all()
+
+        return render(
+            request,
+            "auctions/index.html",
+            {"listings": active_listings, "categories": categories},
+        )
 
 
 def login_view(request):
@@ -88,15 +135,22 @@ def create_categories(request):
 def create_listing(request):
     if request.method == "GET":
         categories = Category.objects.all()
-        return render(request, "auctions/listing.html", {"categories": categories})
+        durations = Listings.DURATIONS
+        return render(
+            request,
+            "auctions/create.html",
+            {"categories": categories, "durations": durations},
+        )
     else:
         # Get data from form
         title = request.POST["title"]
         description = request.POST["description"]
         start_bid = request.POST["start_bid"]
-        image_url = request.POST["image"]
+        image_url = request.POST["image_url"]
         category = request.POST["category"]
         # start_date = timezone.now()
+        end_date = request.POST["end_date"]
+        duration = request.POST["duration"]
 
         # Who is the user?
         user = request.user
@@ -112,15 +166,14 @@ def create_listing(request):
             image=image_url,
             category=category_data,
             user=user,
+            end_date=end_date,
+            duration=duration,
         )
         # Insert the object our database
         listing.save()
+
         # Redirect to index page
-        return HttpResponseRedirect(
-            reverse(
-                "auctions:index",
-            )
-        )
+        return HttpResponseRedirect(reverse(index))
 
 
 # @login_required

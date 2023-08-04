@@ -1,48 +1,47 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<h2>Create New Listing</h2>
+<div class="container-fluid">
 
-<div class="container my-5">
-    <form action="{% url 'create' %}" method="post">
-        <div class="mb-3">
-            <label for="title" class="form-label">Title</label>
-            <input type="text" name="title" class="form-control" id="title" aria-describedby="titleHelp">
-            <div id="titleHelp" class="form-text">Title of your listing. Keep it short and catchy.</div>
-        </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <input type="text" name="description" class="form-control" id="description"
-                aria-describedby="descriptionHelp">
-            <div id="descriptionHelp" class="form-text">Describe your product in less than 300 words.</div>
-        </div>
-        <div class="mb-3">
-            <label for="start_bid" class="form-label">Start Bid</label>
-            <input type="number" name="start_bid" class="form-control" id="start_bid" min="1"
-                aria-describedby="start_bidHelp">
-            <div id="start_bidHelp" class="form-text">Starting price in USD.</div>
-        </div>
-        <div class="mb-3">
-            <label for="image" class="form-label">Image</label>
-            <input type="text" name="image" class="form-control" id="image" aria-describedby="imageHelp">
-            <div id="imageHelp" class="form-text">Enter a URL link, e.g: "https://www.example.com/img/123/"</div>
-        </div>
-        <div class="mb-3">
-            <label for="category" class="form-label">Category</label>
-            <select class="form-select" name="category" aria-label="Select a category">
-                <option selected>Select a category</option>
-                {% for category in categories %}
-                <option value="{{ category.name }}">{{ category.name }}</option>
-                {% endfor %}
-            </select>
+    <div class="container">
 
+        <h2>{{ listing.title }}</h2>
+        <div class="row my-3">
+            {% if user.is_authenticated %}
+            {% if hasWatchers %}
+            <form action="{% url 'removeWatchlist' id=listing.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Remove from Watchlist</button>
+            </form>
+            {% else %}
+            <form action="{% url 'addWatchlist' id=listing.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm">Add to Watchlist</button>
+            </form>
+            {% endif %}
+            {% endif %}
         </div>
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Creat New Listing</button>
-    </form>
-</div>
 
-{% endblock %}
+        <img src="{{ listing.image }}" alt="{{ listing.title }}">
+        <p class="my-2">{{ listing.description }}.</p>
+        <p class="my-2"><strong>Owner:</strong> {{ listing.user }}.</p>
+        <h4 class="">${{ listing.start_bid }}</h4>
+        <hr>
+        <p class=""><small class="text-body-secondary">Created {{ listing.start_date}}</small>
+        </p>
+
+    </div>
+    <!-- <div class="col">
+        <div class="card">
+            <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ listing.title }}</h5>
+                <p class="card-text">{{ listing.description }}.</p>
+                <hr>
+                <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
+                </p>
+            </div>
+        </div>
+    </div> -->
+
+    {% endblock %}

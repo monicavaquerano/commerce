@@ -2,31 +2,36 @@
 
 {% block body %}
 {% if user.is_authenticated %}
+<div class="container-fluid">
 
-<h2>Categories</h2>
+    <h2>Categories</h2>
 
-{% for category in categories %}
-<ul>
-    <li>{{ category }}</li>
-</ul>
+    {% for category in categories %}
+    <ul>
+        <li>{{ category }}</li>
+    </ul>
 
-{% endfor %}
+    {% endfor %}
 
-<h2>Create a category</h2>
-<form action="{% url 'categories' %}" method="POST">
-    {% csrf_token %}
-    <div class="form-group">
-        <input class="form-control" type="text" name="category" placeholder="Category name">
+
+    <div class="container">
+        <h2>Create a category</h2>
+
+        <form action="{% url 'categories' %}" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <input type="text" name="category" class="form-control" id="category" aria-describedby="categoryHelp">
+                <div id="categoryHelp" class="form-text">Enter a new category.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Create New Category</button>
+        </form>
+
+        {% else %}
+
+        <p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
     </div>
-    <input class="btn btn-primary" type="submit" value="Create category">
 
-</form>
-
-{% else %}
-
-<p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
-
-
-{% endif %}
-
+    {% endif %}
+</div>
 {% endblock %}

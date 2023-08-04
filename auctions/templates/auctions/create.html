@@ -1,0 +1,66 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container-fluid">
+
+    <h2>Create New Listing</h2>
+
+    <div class="container my-5">
+        <form action="{% url 'create' %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" class="form-control" id="title" aria-describedby="titleHelp" required>
+                <div id="titleHelp" class="form-text">Title of your listing. Keep it short and catchy.</div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <input type="text" name="description" class="form-control" id="description"
+                    aria-describedby="descriptionHelp" required>
+                <div id="descriptionHelp" class="form-text">Describe your product in less than 300 words.</div>
+            </div>
+            <div class="mb-3">
+                <label for="start_bid" class="form-label">Start Bid</label>
+                <input type="number" name="start_bid" class="form-control" id="start_bid" min="1"
+                    aria-describedby="start_bidHelp" required>
+                <div id="start_bidHelp" class="form-text">Starting price in USD.</div>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Image</label>
+                <input type="text" name="image_url" class="form-control" id="image" aria-describedby="imageHelp">
+                <div id="imageHelp" class="form-text">Enter a URL link, e.g: "https://www.example.com/img/123/"</div>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" name="category" aria-label="Select a category" required>
+                    <option selected>Select a category</option>
+                    {% for category in categories %}
+                    <option value="{{ category.name }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" name="end_date" class="form-control" id="image" aria-describedby="end_dateHelp"
+                    required>
+                <div id="end_dateHelp" class="form-text">End date for the biding.</div>
+            </div>
+            <!-- <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+            <label class="form-check-label" for="exampleCheck1">Check me out</label>
+        </div> -->
+            <div class="mb-3">
+                <label for="duration" class="form-label">Duration</label>
+                <select class="form-select" name="duration" aria-label="Select a duration" required>
+                    <option selected>Select a category</option>
+                    {% for duration in durations %}
+                    <option value="{{ duration.0 }}">{{ duration.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create New Listing</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
