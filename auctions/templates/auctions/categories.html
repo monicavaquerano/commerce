@@ -4,17 +4,16 @@
 {% if user.is_authenticated %}
 <div class="container-fluid">
 
-    <h2>Categories</h2>
-
-    {% for category in categories %}
-    <ul>
-        <li>{{ category }}</li>
-    </ul>
-
-    {% endfor %}
-
-
     <div class="container">
+
+        <h2>Categories</h2>
+
+        {% for category in categories %}
+        <ul>
+            <li>{{ category }}</li>
+        </ul>
+
+        {% endfor %}
         <h2>Create a category</h2>
 
         <form action="{% url 'categories' %}" method="POST">

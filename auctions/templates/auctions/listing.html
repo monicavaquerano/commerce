@@ -29,19 +29,44 @@
         <hr>
         <p class=""><small class="text-body-secondary">Created {{ listing.start_date}}</small>
         </p>
+        <div class="row my-3">
+            <h2>Comments</h2>
+            <div class="my-3">
+                {% for comment in comments %}
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div>
+                            <h5>{{ comment.user }}</h5>
+                            <p>{{ comment.comment }}</p>
+                            <p><small>{{ comment.datetime }}</small></p>
+                        </div>
+                    </li>
+                </ul>
+
+                {% empty %}
+
+                <h5>No comments yet.</h5>
+                <span>Be the fist one.</span>
+
+                {% endfor %}
+            </div>
+
+            {% if user.is_authenticated %}
+            <form action="{% url 'addComment' id=listing.id %}" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="newComment" class="form-label">New Comment</label>
+                    <input type="text" name="newComment" class="form-control" id="newComment"
+                        aria-describedby="newCommentHelp">
+                    <div id="newCommentHelp" class="form-text">Max. 300 character.</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+            {% endif %}
+
+        </div>
 
     </div>
-    <!-- <div class="col">
-        <div class="card">
-            <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.title }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ listing.title }}</h5>
-                <p class="card-text">{{ listing.description }}.</p>
-                <hr>
-                <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
-                </p>
-            </div>
-        </div>
-    </div> -->
+
 
     {% endblock %}

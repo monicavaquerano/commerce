@@ -35,7 +35,7 @@ class Listings(models.Model):
     watchers = models.ManyToManyField(User, blank=True, related_name="watchlist")
 
     start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField()
+    end_date = models.DateTimeField()  # REVISAR
 
     DURATIONS = [
         (3, "Three Days"),
@@ -62,8 +62,10 @@ class Bids(models.Model):
     amount = models.DecimalField(
         max_digits=8, decimal_places=2, validators=[MinValueValidator(0.01)]
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
-    listing = models.ForeignKey(Listings, on_delete=models.CASCADE, related_name="bids")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="UserBids")
+    listing = models.ForeignKey(
+        Listings, on_delete=models.CASCADE, related_name="listingBids"
+    )
     datetime = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -76,9 +78,11 @@ class Bids(models.Model):
 class Comments(models.Model):
     comment = models.TextField(max_length=300)
     datetime = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="userComments"
+    )
     listing = models.ForeignKey(
-        Listings, on_delete=models.CASCADE, related_name="comments"
+        Listings, on_delete=models.CASCADE, related_name="listingComments"
     )
 
     class Meta:

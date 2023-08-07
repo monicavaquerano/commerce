@@ -30,7 +30,7 @@
                 </li>
                 {% if user.is_authenticated %}
                 <li><a href="{% url 'categories' %}" class="nav-link px-2 link-secondary">Categories</a></li>
-                <li><a href="{% url 'create' %}" class="nav-link px-2 link-secondary">Watchlist</a></li>
+                <li><a href="{% url 'watchlist' %}" class="nav-link px-2 link-secondary">Watchlist</a></li>
                 <li><a href="{% url 'create' %}" class="nav-link px-2 link-secondary">Create Listing</a></li>
                 <li><a href="{% url 'user' %}" class="nav-link px-2 link-body-emphasis">
                         <strong>{{ user.username }}</strong>.

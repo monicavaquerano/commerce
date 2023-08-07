@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import User, Category, Listings
+from .models import Bids, Comments, User, Category, Listings
 
 
 def index(request):
@@ -17,19 +17,71 @@ def index(request):
     return render(
         request,
         "auctions/index.html",
-        {"listings": active_listings, "categories": categories},
+        {
+            "listings": active_listings,
+            "categories": categories,
+        },
     )
 
 
 def listing(request, id):
     listingData = Listings.objects.get(pk=id)
     hasWatchers = request.user in listingData.watchers.all()
+    comments = Comments.objects.filter(listing=listingData)
     return render(
         request,
         "auctions/listing.html",
         {
             "listing": listingData,
             "hasWatchers": hasWatchers,
+            "comments": comments,
+        },
+    )
+
+
+def addComment(request, id):
+    currentUser = request.user
+    listingData = Listings.objects.get(pk=id)
+    comment = request.POST["newComment"]
+
+    newComment = Comments(
+        comment=comment,
+        user=currentUser,
+        listing=listingData,
+    )
+
+    # Insert the object our database
+    newComment.save()
+
+    return HttpResponseRedirect(reverse("listing", args=(id,)))
+
+
+# REVISAR
+def addBid(request, id):
+    currentUser = request.user
+    listingData = Listings.objects.get(pk=id)
+    bid = request.POST["newBid"]
+
+    newBid = Bids(
+        amount=bid,
+        user=currentUser,
+        listing=listingData,
+    )
+
+    # Insert the object our database
+    newBid.save()
+
+    return HttpResponseRedirect(reverse("listing", args=(id,)))
+
+
+def displayWatchlist(request):
+    currentUser = request.user
+    listings = currentUser.watchlist.all()
+    return render(
+        request,
+        "auctions/watchlist.html",
+        {
+            "listings": listings,
         },
     )
 
@@ -183,28 +235,3 @@ def edit_user(request):
             request,
             "auctions/user.html",
         )
-
-    # if request.method == "POST":
-    #     username = request.POST["username"]
-    #     fname = request.POST["fname"]
-    #     lname = request.POST["lname"]
-    #     email = request.POST["email"]
-
-    # password = request.POST["password"]
-    # confirmation = request.POST["confirmation"]
-
-    # if password != confirmation:
-    #     return render(
-    #         request, "auctions/user.html", {"message": "Passwords must match."}
-    #     )
-
-    # Attempt to create new user
-    # try:
-    #     user = User.objects.get(username)
-    #     user.save()
-    # except IntegrityError:
-    #     return render(
-    #         request,
-    #         "auctions/user.html",
-    #         {"message": "Username not valid."},
-    #     )
