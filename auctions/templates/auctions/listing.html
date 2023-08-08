@@ -25,10 +25,49 @@
         <img src="{{ listing.image }}" alt="{{ listing.title }}">
         <p class="my-2">{{ listing.description }}.</p>
         <p class="my-2"><strong>Owner:</strong> {{ listing.user }}.</p>
+        <p class="my-1"><strong>Start price:</strong></p>
         <h4 class="">${{ listing.start_bid }}</h4>
+
+        <p class="my-1"><strong>Current bid:</strong></p>
+        {% for bid in bids %}
+        <h4 class="">${{ bid.amount }} by {{ bid.user }}</h4>
+        {% empty %}
+        <h6>No bids yet.</h6>
+        <span>Be the fist one.</span>
+        {% endfor %}
+
         <hr>
         <p class=""><small class="text-body-secondary">Created {{ listing.start_date}}</small>
         </p>
+
+
+        {% if message %}
+        {% if update %}
+        <div class="alert alert-success" role="alert">
+            {{message}}
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            {{message}}
+        </div>
+        {% endif %}
+        {% endif %}
+
+
+        {% if user.is_authenticated %}
+        <form action="{% url 'addBid' id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="newBid" class="form-label">Add Bid</label>
+                <input type="number" name="newBid" class="form-control" id="newBid" min="0"
+                    aria-describedby="newBidHelp" required>
+                <div id="newBidHelp" class="form-text">Must be heigher than the actual price.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
+        {% endif %}
+
+
         <div class="row my-3">
             <h2>Comments</h2>
             <div class="my-3">

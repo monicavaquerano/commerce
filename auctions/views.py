@@ -26,6 +26,8 @@ def index(request):
 
 def listing(request, id):
     listingData = Listings.objects.get(pk=id)
+    bidData = Bids.objects.filter(listing=id)
+    # bidData = Bids.objects.all()
     hasWatchers = request.user in listingData.watchers.all()
     comments = Comments.objects.filter(listing=listingData)
     return render(
@@ -35,6 +37,7 @@ def listing(request, id):
             "listing": listingData,
             "hasWatchers": hasWatchers,
             "comments": comments,
+            "bids": bidData,
         },
     )
 
@@ -60,18 +63,41 @@ def addComment(request, id):
 def addBid(request, id):
     currentUser = request.user
     listingData = Listings.objects.get(pk=id)
+    bidData = Bids.objects.filter(listing=id)
     bid = request.POST["newBid"]
 
-    newBid = Bids(
-        amount=bid,
-        user=currentUser,
-        listing=listingData,
-    )
+    if float(bid) > listingData.start_bid:
+        newBid = Bids(
+            amount=bid,
+            user=currentUser,
+            listing=listingData,
+        )
 
-    # Insert the object our database
-    newBid.save()
+        # Insert the object our database
+        newBid.save()
 
-    return HttpResponseRedirect(reverse("listing", args=(id,)))
+        return render(
+            request,
+            "auctions/listing.html",
+            {
+                "bids": bidData,
+                "listing": listingData,
+                "message": "Bid was updated successfully.",
+                "update": True,
+            },
+        )
+
+    else:
+        return render(
+            request,
+            "auctions/listing.html",
+            {
+                "bids": bidData,
+                "listing": listingData,
+                "message": "Bid was not updated.",
+                "update": False,
+            },
+        )
 
 
 def displayWatchlist(request):
