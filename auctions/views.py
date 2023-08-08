@@ -26,8 +26,7 @@ def index(request):
 
 def listing(request, id):
     listingData = Listings.objects.get(pk=id)
-    bidData = Bids.objects.filter(listing=id)
-    # bidData = Bids.objects.all()
+    bidData = Bids.objects.filter(listing=id).first()
     hasWatchers = request.user in listingData.watchers.all()
     comments = Comments.objects.filter(listing=listingData)
     return render(
@@ -63,39 +62,74 @@ def addComment(request, id):
 def addBid(request, id):
     currentUser = request.user
     listingData = Listings.objects.get(pk=id)
-    bidData = Bids.objects.filter(listing=id)
+    bidData = Bids.objects.filter(listing=id).first()
     bid = request.POST["newBid"]
 
-    if float(bid) > listingData.start_bid:
-        newBid = Bids(
-            amount=bid,
-            user=currentUser,
-            listing=listingData,
-        )
+    if float(bid) >= listingData.start_bid:
+        try:
+            currentBid = float(bidData.amount)
+            if float(bid) > currentBid:
+                newBid = Bids(
+                    amount=bid,
+                    user=currentUser,
+                    listing=listingData,
+                )
 
-        # Insert the object our database
-        newBid.save()
+                # Insert the object our database
+                newBid.save()
 
-        return render(
-            request,
-            "auctions/listing.html",
-            {
-                "bids": bidData,
-                "listing": listingData,
-                "message": "Bid was updated successfully.",
-                "update": True,
-            },
-        )
+                return render(
+                    request,
+                    "auctions/listing.html",
+                    {
+                        "listing": listingData,
+                        "message": "Bid was updated successfully.",
+                        "update": True,
+                        "bids": newBid,
+                    },
+                )
+            else:
+                return render(
+                    request,
+                    "auctions/listing.html",
+                    {
+                        "listing": listingData,
+                        "message": "Bid was not updated -new bid has to be higher than current bid.",
+                        "update": False,
+                        "bids": bidData,
+                    },
+                )
+
+        except AttributeError:
+            newBid = Bids(
+                amount=bid,
+                user=currentUser,
+                listing=listingData,
+            )
+
+            # Insert the object our database
+            newBid.save()
+
+            return render(
+                request,
+                "auctions/listing.html",
+                {
+                    "listing": listingData,
+                    "message": "Bid was updated successfully.",
+                    "update": True,
+                    "bids": newBid,
+                },
+            )
 
     else:
         return render(
             request,
             "auctions/listing.html",
             {
-                "bids": bidData,
                 "listing": listingData,
-                "message": "Bid was not updated.",
+                "message": "Bid was not updated -bid has to be equal or higher than starting price.",
                 "update": False,
+                "bids": bidData,
             },
         )
 

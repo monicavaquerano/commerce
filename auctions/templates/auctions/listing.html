@@ -29,12 +29,12 @@
         <h4 class="">${{ listing.start_bid }}</h4>
 
         <p class="my-1"><strong>Current bid:</strong></p>
-        {% for bid in bids %}
-        <h4 class="">${{ bid.amount }} by {{ bid.user }}</h4>
-        {% empty %}
+        {% if bids %}
+        <h4 class="">${{ bids.amount }} by {{ bids.user }}</h4>
+        {% else %}
         <h6>No bids yet.</h6>
         <span>Be the fist one.</span>
-        {% endfor %}
+        {% endif %}
 
         <hr>
         <p class=""><small class="text-body-secondary">Created {{ listing.start_date}}</small>
