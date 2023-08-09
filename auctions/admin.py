@@ -7,10 +7,14 @@ class ListingsAdmin(admin.ModelAdmin):
     filter_horizontal = ("watchers",)
 
 
+class BidsAdmin(admin.ModelAdmin):
+    ...
+
+
 admin.site.register(User)
 admin.site.register(Listings, ListingsAdmin)
 admin.site.register(Category)
-admin.site.register(Bids)
+admin.site.register(Bids, BidsAdmin)
 admin.site.register(Comments)
 
 

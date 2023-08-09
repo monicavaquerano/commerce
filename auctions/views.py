@@ -27,6 +27,7 @@ def index(request):
 def listing(request, id):
     listingData = Listings.objects.get(pk=id)
     bidData = Bids.objects.filter(listing=id).first()
+    bidTotal = len(Bids.objects.filter(listing=id))
     hasWatchers = request.user in listingData.watchers.all()
     comments = Comments.objects.filter(listing=listingData)
     return render(
@@ -37,6 +38,7 @@ def listing(request, id):
             "hasWatchers": hasWatchers,
             "comments": comments,
             "bids": bidData,
+            "bidTotal": bidTotal,
         },
     )
 
@@ -68,6 +70,8 @@ def addBid(request, id):
     if float(bid) >= listingData.start_bid:
         try:
             currentBid = float(bidData.amount)
+            bidTotal = len(Bids.objects.filter(listing=id))
+
             if float(bid) > currentBid:
                 newBid = Bids(
                     amount=bid,
@@ -86,6 +90,7 @@ def addBid(request, id):
                         "message": "Bid was updated successfully.",
                         "update": True,
                         "bids": newBid,
+                        "bidTotal": bidTotal,
                     },
                 )
             else:
@@ -97,10 +102,13 @@ def addBid(request, id):
                         "message": "Bid was not updated -new bid has to be higher than current bid.",
                         "update": False,
                         "bids": bidData,
+                        "bidTotal": bidTotal,
                     },
                 )
 
         except AttributeError:
+            bidTotal = 1
+
             newBid = Bids(
                 amount=bid,
                 user=currentUser,
@@ -118,6 +126,7 @@ def addBid(request, id):
                     "message": "Bid was updated successfully.",
                     "update": True,
                     "bids": newBid,
+                    "bidTotal": bidTotal,
                 },
             )
 
@@ -130,6 +139,7 @@ def addBid(request, id):
                 "message": "Bid was not updated -bid has to be equal or higher than starting price.",
                 "update": False,
                 "bids": bidData,
+                "bidTotal": bidTotal,
             },
         )
 
