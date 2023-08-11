@@ -25,16 +25,34 @@
         <img src="{{ listing.image }}" alt="{{ listing.title }}">
         <p class="my-2">{{ listing.description }}.</p>
         <p class="my-2"><strong>Owner:</strong> {{ listing.user }}.</p>
+
+        {% if bids %}
+        <p class="my-1"><strong>Current bid:</strong></p>
+        <h4 class="">${{ bids.amount }} by {{ bids.user }}</h4>
+        <p><small><span class="badge text-bg-primary">{{ bidTotal }}</span> bid(s) so far.</small></p>
+        {% else %}
         <p class="my-1"><strong>Start price:</strong></p>
         <h4 class="">${{ listing.start_bid }}</h4>
-
-        <p class="my-1"><strong>Current bid:</strong></p>
-        {% if bids %}
-        <h4 class="">${{ bids.amount }} by {{ bids.user }}</h4>
-        <p><span class="badge text-bg-primary">{{ bidTotal }}</span> bids so far</p>
-        {% else %}
         <h6>No bids yet.</h6>
         <span>Be the fist one.</span>
+        {% endif %}
+
+        <p class="my-1"><small><strong>End date:</strong></small></p>
+        <h6>{{ lapso }}</h6>
+
+        {% if isClosed %}
+        <p><small> Sigue la subasta!</small></p>
+        {% else %}
+        <p><small>Ya se cerró la subasta</small></p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        {% if isOwner %}
+        <form action="{% url 'closeAuction' id=listing.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Close Auction</button>
+        </form>
+        {% endif %}
         {% endif %}
 
         <hr>
@@ -64,7 +82,7 @@
                     aria-describedby="newBidHelp" required>
                 <div id="newBidHelp" class="form-text">Must be heigher than the actual price.</div>
             </div>
-            <button type="submit" class="btn btn-primary">Post</button>
+            <button type="submit" class="btn btn-primary">Place Bid</button>
         </form>
         {% endif %}
 

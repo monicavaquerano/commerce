@@ -1,4 +1,5 @@
-from datetime import timezone
+from datetime import timedelta, timezone
+import datetime
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core.validators import MinValueValidator
@@ -35,7 +36,6 @@ class Listings(models.Model):
     watchers = models.ManyToManyField(User, blank=True, related_name="watchlist")
 
     start_date = models.DateTimeField(auto_now_add=True)
-    end_date = models.DateTimeField()  # REVISAR
 
     DURATIONS = [
         (3, "Three Days"),
@@ -44,7 +44,9 @@ class Listings(models.Model):
         (28, "Four Weeks"),
     ]
 
-    duration = models.IntegerField(choices=DURATIONS)
+    duration = models.IntegerField(choices=DURATIONS, blank=False, default=28)
+
+    # ARREGLAR ESTO!!!!!!!!!!!!!!!!!1
 
     is_active = models.BooleanField(default=True)
 

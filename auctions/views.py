@@ -1,3 +1,4 @@
+import datetime
 from django.contrib.auth import authenticate, login, logout
 
 # from django.contrib.auth.decorators import login_required
@@ -30,6 +31,10 @@ def listing(request, id):
     bidTotal = len(Bids.objects.filter(listing=id))
     hasWatchers = request.user in listingData.watchers.all()
     comments = Comments.objects.filter(listing=listingData)
+    isOwner = request.user == listingData.user
+
+    lapso = listingData.start_date + datetime.timedelta(days=listingData.duration)
+
     return render(
         request,
         "auctions/listing.html",
@@ -39,8 +44,57 @@ def listing(request, id):
             "comments": comments,
             "bids": bidData,
             "bidTotal": bidTotal,
+            "isOwner": isOwner,
+            "lapso": lapso.date,
         },
     )
+
+
+def closeAuction(request, id):
+    listingData = Listings.objects.get(pk=id)
+    bidData = Bids.objects.filter(listing=id).first()
+    bidTotal = len(Bids.objects.filter(listing=id))
+    hasWatchers = request.user in listingData.watchers.all()
+    comments = Comments.objects.filter(listing=listingData)
+    isOwner = request.user == listingData.user
+
+    lapso = datetime.timedelta(days=listingData.duration)
+    end_date = listingData.start_date + lapso
+
+    if end_date > timezone.now():
+        isClosed = True
+
+        return render(
+            request,
+            "auctions/listing.html",
+            {
+                "listing": listingData,
+                "hasWatchers": hasWatchers,
+                "comments": comments,
+                "bids": bidData,
+                "bidTotal": bidTotal,
+                "isOwner": isOwner,
+                "isClosed": isClosed,
+                "message": "ya se cerró la subasta",
+            },
+        )
+    else:
+        isClosed = False
+
+        return render(
+            request,
+            "auctions/listing.html",
+            {
+                "listing": listingData,
+                "hasWatchers": hasWatchers,
+                "comments": comments,
+                "bids": bidData,
+                "bidTotal": bidTotal,
+                "isOwner": isOwner,
+                "isClosed": isClosed,
+                "message": "sigue la subasta",
+            },
+        )
 
 
 def addComment(request, id):
@@ -270,8 +324,6 @@ def create_listing(request):
         start_bid = request.POST["start_bid"]
         image_url = request.POST["image_url"]
         category = request.POST["category"]
-        # start_date = timezone.now()
-        end_date = request.POST["end_date"]
         duration = request.POST["duration"]
 
         # Who is the user?
@@ -288,7 +340,6 @@ def create_listing(request):
             image=image_url,
             category=category_data,
             user=user,
-            end_date=end_date,
             duration=duration,
         )
         # Insert the object our database

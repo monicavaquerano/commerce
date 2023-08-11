@@ -21,7 +21,7 @@
             </div>
             <div class="mb-3">
                 <label for="start_bid" class="form-label">Start Bid</label>
-                <input type="number" name="start_bid" class="form-control" id="start_bid" min="1"
+                <input type="number" name="start_bid" class="form-control" id="start_bid" min="1" step="0.01"
                     aria-describedby="start_bidHelp" required>
                 <div id="start_bidHelp" class="form-text">Starting price in USD.</div>
             </div>
@@ -39,16 +39,7 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="mb-3">
-                <label for="end_date" class="form-label">End Date</label>
-                <input type="date" name="end_date" class="form-control" id="image" aria-describedby="end_dateHelp"
-                    required>
-                <div id="end_dateHelp" class="form-text">End date for the biding.</div>
-            </div>
-            <!-- <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1">
-            <label class="form-check-label" for="exampleCheck1">Check me out</label>
-        </div> -->
+
             <div class="mb-3">
                 <label for="duration" class="form-label">Duration</label>
                 <select class="form-select" name="duration" aria-label="Select a duration" required>

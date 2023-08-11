@@ -4,6 +4,8 @@
 
 <div class="container-fluid">
     <h2>Active Listings</h2>
+
+    {% if categories %}
     <form class="row g-3 my-1" action="{% url 'displayCategory' %}" method="post">
         {% csrf_token %}
         <div class="col-auto">
@@ -23,6 +25,8 @@
             <button type="submit" class="btn btn-primary btn-sm">Select</button>
         </div>
     </form>
+    {% endif %}
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 my-1">
         {% for listing in listings %}
         <div class="col">
