@@ -21,8 +21,11 @@
             </div>
             <div class="mb-3">
                 <label for="start_bid" class="form-label">Start Bid</label>
-                <input type="number" name="start_bid" class="form-control" id="start_bid" min="1" step="0.01"
-                    aria-describedby="start_bidHelp" required>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="start_bid" class="form-control" id="start_bid" min="1" step="0.01"
+                        aria-describedby="start_bidHelp" required>
+                </div>
                 <div id="start_bidHelp" class="form-text">Starting price in USD.</div>
             </div>
             <div class="mb-3">

@@ -4,6 +4,29 @@
 <div class="container-fluid">
 
     <div class="container">
+        {% if message %}
+        {% if update %}
+        <div class="alert alert-success" role="alert">
+            {{message}}
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            {{message}}
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if not listing.is_active %}
+        {% if user == bid.amount.user %}
+        <div class="alert alert-success" role="alert">
+            Prueba Ganador
+        </div>
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            Prueba Perdedor
+        </div>
+        {% endif %}
+        {% endif %}
 
         <h2>{{ listing.title }}</h2>
         <div class="row my-3">
@@ -22,7 +45,7 @@
             {% endif %}
         </div>
 
-        <img src="{{ listing.image }}" alt="{{ listing.title }}">
+        <img src="{{ listing.image }}" alt="{{ listing.title }}" sizes="">
         <p class="my-2">{{ listing.description }}.</p>
         <p class="my-2"><strong>Owner:</strong> {{ listing.user }}.</p>
 
@@ -38,13 +61,7 @@
         {% endif %}
 
         <p class="my-1"><small><strong>End date:</strong></small></p>
-        <h6>{{ lapso }}</h6>
-
-        {% if isClosed %}
-        <p><small> Sigue la subasta!</small></p>
-        {% else %}
-        <p><small>Ya se cerró la subasta</small></p>
-        {% endif %}
+        <h6>{{ end_date }}</h6>
 
         {% if user.is_authenticated %}
         {% if isOwner %}
@@ -59,27 +76,17 @@
         <p class=""><small class="text-body-secondary">Created {{ listing.start_date}}</small>
         </p>
 
-
-        {% if message %}
-        {% if update %}
-        <div class="alert alert-success" role="alert">
-            {{message}}
-        </div>
-        {% else %}
-        <div class="alert alert-danger" role="alert">
-            {{message}}
-        </div>
-        {% endif %}
-        {% endif %}
-
-
         {% if user.is_authenticated %}
         <form action="{% url 'addBid' id=listing.id %}" method="post">
             {% csrf_token %}
             <div class="mb-3">
                 <label for="newBid" class="form-label">Add Bid</label>
-                <input type="number" name="newBid" class="form-control" id="newBid" min="0" step="0.01"
-                    aria-describedby="newBidHelp" required>
+
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="newBid" class="form-control" id="newBid" min="0" step="0.01"
+                        aria-describedby="newBidHelp" required>
+                </div>
                 <div id="newBidHelp" class="form-text">Must be heigher than the actual price.</div>
             </div>
             <button type="submit" class="btn btn-primary">Place Bid</button>

@@ -33,7 +33,7 @@ def listing(request, id):
     comments = Comments.objects.filter(listing=listingData)
     isOwner = request.user == listingData.user
 
-    lapso = listingData.start_date + datetime.timedelta(days=listingData.duration)
+    end_date = listingData.start_date + datetime.timedelta(days=listingData.duration)
 
     return render(
         request,
@@ -45,56 +45,40 @@ def listing(request, id):
             "bids": bidData,
             "bidTotal": bidTotal,
             "isOwner": isOwner,
-            "lapso": lapso.date,
+            "end_date": end_date.date,
         },
     )
 
 
 def closeAuction(request, id):
     listingData = Listings.objects.get(pk=id)
+    listingData.is_active = False
+    # listingData.save()
+
     bidData = Bids.objects.filter(listing=id).first()
     bidTotal = len(Bids.objects.filter(listing=id))
     hasWatchers = request.user in listingData.watchers.all()
     comments = Comments.objects.filter(listing=listingData)
     isOwner = request.user == listingData.user
 
-    lapso = datetime.timedelta(days=listingData.duration)
-    end_date = listingData.start_date + lapso
+    # For time and duration
+    end_date = listingData.start_date + datetime.timedelta(days=listingData.duration)
 
-    if end_date > timezone.now():
-        isClosed = True
-
-        return render(
-            request,
-            "auctions/listing.html",
-            {
-                "listing": listingData,
-                "hasWatchers": hasWatchers,
-                "comments": comments,
-                "bids": bidData,
-                "bidTotal": bidTotal,
-                "isOwner": isOwner,
-                "isClosed": isClosed,
-                "message": "ya se cerró la subasta",
-            },
-        )
-    else:
-        isClosed = False
-
-        return render(
-            request,
-            "auctions/listing.html",
-            {
-                "listing": listingData,
-                "hasWatchers": hasWatchers,
-                "comments": comments,
-                "bids": bidData,
-                "bidTotal": bidTotal,
-                "isOwner": isOwner,
-                "isClosed": isClosed,
-                "message": "sigue la subasta",
-            },
-        )
+    return render(
+        request,
+        "auctions/listing.html",
+        {
+            "listing": listingData,
+            "hasWatchers": hasWatchers,
+            "comments": comments,
+            "bids": bidData,
+            "bidTotal": bidTotal,
+            "isOwner": isOwner,
+            "end_date": end_date.date,
+            "update": True,
+            "message": "Your auction is closed.",
+        },
+    )
 
 
 def addComment(request, id):
@@ -121,7 +105,7 @@ def addBid(request, id):
     bidData = Bids.objects.filter(listing=id).first()
     bid = request.POST["newBid"]
 
-    if float(bid) >= listingData.start_bid:
+    if float(bid) >= listingData.start_bid and currentUser != listingData.user:
         try:
             currentBid = float(bidData.amount)
             bidTotal = len(Bids.objects.filter(listing=id))
@@ -190,10 +174,9 @@ def addBid(request, id):
             "auctions/listing.html",
             {
                 "listing": listingData,
-                "message": "Bid was not updated -bid has to be equal or higher than starting price.",
+                "message": "Bid was not updated -bid has to be equal or higher than starting price. Auction owner cannot bid.",
                 "update": False,
                 "bids": bidData,
-                "bidTotal": bidTotal,
             },
         )
 
