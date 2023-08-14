@@ -1,30 +1,123 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-
 {% if user.is_authenticated %}
-<label for="">Username: </label>
-<p>{{ user.get_username }}</p>
+<div class="container-fluid">
 
-<label for="">First Name: </label>
-<p>{{ user.first_name }}</p>
+    <h1>My account</h1>
+    <div class="container">
+        <label for="">Username: </label>
+        <p>{{ user.get_username }}</p>
 
-<label for="">Last name: </label>
-<p>{{ user.last_name }}</p>
+        <label for="">First Name: </label>
+        <p>{{ user.first_name }}</p>
 
-<label for="">Email: </label>
-<p>{{ user.email }}</p>
+        <label for="">Last name: </label>
+        <p>{{ user.last_name }}</p>
 
-{% if message %}
+        <label for="">Email: </label>
+        <p>{{ user.email }}</p>
 
-{{ message }}
+        {% if message %}
+        {{ message }}
+        {% endif %}
+    </div>
 
-{% endif %}
+    <h2>My bids</h2>
 
-{% else %}
-<br>
-<p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
+    <form class="row g-3 my-1" action="" method="post">
+        {% csrf_token %}
+        <div class="col-auto">
+            <label for="isActive" class="form-label">Active or closed auctions?</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select form-select-sm" name="category" aria-label="Select a category">
+                <!-- ARREGLAR ACÁ -->
+                <!-- <option selected disabled>Open category menu</option> -->
+                <!-- ARREGLAR ACÁ -->
+                {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm">Select</button>
+        </div>
+    </form>
 
-{% endif %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
+        {% for listing in bidListings %}
 
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ listing.listing.image }}" class="card-img-top" alt="{{ listing.listing.description }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.listing.title }}</h5>
+                    <p class="card-text">{{ listing.listing.description }}.</p>
+                    <a href="{% url 'listing' id=listing.listing.id %}" class="btn btn-primary">Listing details</a>
+                    <hr>
+                    <p class="card-text"><small class="text-body-secondary">Created
+                            {{listing.listing.start_date}}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% empty %}
+        <br>
+        <p class="my-5">You haven't bid in an auction.</p>
+        {% endfor %}
+    </div>
+
+    <h2>My listings</h2>
+
+    <form class="row g-3 my-1" action="" method="post">
+        {% csrf_token %}
+        <div class="col-auto">
+            <label for="isActive" class="form-label">Active or closed auctions?</label>
+        </div>
+        <div class="col-auto">
+            <select class="form-select form-select-sm" name="category" aria-label="Select a category">
+                <!-- ARREGLAR ACÁ -->
+                <!-- <option selected disabled>Open category menu</option> -->
+                <!-- ARREGLAR ACÁ -->
+                {% for category in categories %}
+                <option value="{{ category.name }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm">Select</button>
+        </div>
+    </form>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
+        {% for listing in my_listings %}
+        <div class="col">
+            <div class="card h-100">
+                <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <p class="card-text">{{ listing.description }}.</p>
+                    <a href="{% url 'listing' id=listing.id %}" class="btn btn-primary">Listing details</a>
+                    <hr>
+                    <p class="card-text"><small class="text-body-secondary">Created {{ listing.start_date}}</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <br>
+        <p class="my-5">You haven't post any listing.</p>
+        {% endfor %}
+    </div>
+
+
+    <!-- Not authenticated -->
+    {% else %}
+    <br>
+    <p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
+
+    {% endif %}
+</div>
 {% endblock %}

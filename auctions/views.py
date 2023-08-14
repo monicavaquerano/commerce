@@ -279,7 +279,12 @@ def register(request):
 def create_categories(request):
     if request.method == "GET":
         categories = Category.objects.all()
-        return render(request, "auctions/categories.html", {"categories": categories})
+
+        return render(
+            request,
+            "auctions/categories.html",
+            {"categories": categories},
+        )
     else:
         category = request.POST["category"]
         new_category = Category(name=category)
@@ -335,7 +340,21 @@ def create_listing(request):
 # @login_required
 def edit_user(request):
     if request.method == "GET":
+        # Current user
+        currentUser = request.user
+        # Listings data
+        my_listings = Listings.objects.filter(user=currentUser)
+        notActives = Listings.objects.filter(user=currentUser, is_active=False)
+        # Bid data
+        bidData = Bids.objects.all()
+        bidListings = bidData.filter(user=currentUser)
+
         return render(
             request,
             "auctions/user.html",
+            {
+                "my_listings": my_listings,
+                "notActives": notActives,
+                "bidListings": bidListings,
+            },
         )
