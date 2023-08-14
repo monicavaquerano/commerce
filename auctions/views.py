@@ -53,7 +53,7 @@ def listing(request, id):
 def closeAuction(request, id):
     listingData = Listings.objects.get(pk=id)
     listingData.is_active = False
-    # listingData.save()
+    listingData.save()
 
     bidData = Bids.objects.filter(listing=id).first()
     bidTotal = len(Bids.objects.filter(listing=id))

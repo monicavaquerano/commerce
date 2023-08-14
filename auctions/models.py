@@ -46,8 +46,6 @@ class Listings(models.Model):
 
     duration = models.IntegerField(choices=DURATIONS, blank=False, default=28)
 
-    # ARREGLAR ESTO!!!!!!!!!!!!!!!!!1
-
     is_active = models.BooleanField(default=True)
 
     def isFinish(self):

@@ -17,13 +17,17 @@
         {% endif %}
 
         {% if not listing.is_active %}
-        {% if user == bid.amount.user %}
+        {% if user == listing.user %}
+        <div class="alert alert-info" role="alert">
+            This auction is closed, {{bids.user}} won it with ${{bids.amount}}.
+        </div>
+        {% elif user == bids.user %}
         <div class="alert alert-success" role="alert">
-            Prueba Ganador
+            Congratulations! You won the auction!
         </div>
         {% else %}
         <div class="alert alert-danger" role="alert">
-            Prueba Perdedor
+            The auction was closed, other user won the auction. Better luck next time.
         </div>
         {% endif %}
         {% endif %}
