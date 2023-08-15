@@ -3,7 +3,9 @@
 {% block body %}
 {% if user.is_authenticated %}
 <div class="container-fluid">
-
+    {% if message %}
+    {{ message }}
+    {% endif %}
     <h1>My account</h1>
     <div class="container">
         <label for="">Username: </label>
@@ -17,37 +19,28 @@
 
         <label for="">Email: </label>
         <p>{{ user.email }}</p>
-
-        {% if message %}
-        {{ message }}
-        {% endif %}
     </div>
 
     <h2>My bids</h2>
 
-    <form class="row g-3 my-1" action="" method="post">
+    <form class="row g-3 my-1" action="{% url 'myActiveBids' %}" method="post">
         {% csrf_token %}
         <div class="col-auto">
-            <label for="isActive" class="form-label">Active or closed auctions?</label>
+            <label for="is_active" class="form-label">Active or closed auctions?</label>
         </div>
         <div class="col-auto">
-            <select class="form-select form-select-sm" name="category" aria-label="Select a category">
-                <!-- ARREGLAR ACÁ -->
-                <!-- <option selected disabled>Open category menu</option> -->
-                <!-- ARREGLAR ACÁ -->
-                {% for category in categories %}
-                <option value="{{ category.name }}">{{ category.name }}</option>
-                {% endfor %}
+            <select class="form-select form-select-sm" name="is_active" aria-label="Active or closed auction?">
+                <option value="True">Active</option>
+                <option value="False">Closed</option>
             </select>
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary btn-sm">Select</button>
         </div>
     </form>
-
+    {{ closed }}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
         {% for listing in bidListings %}
-
         <div class="col">
             <div class="card h-100">
                 <img src="{{ listing.listing.image }}" class="card-img-top" alt="{{ listing.listing.description }}">
@@ -65,32 +58,27 @@
 
         {% empty %}
         <br>
-        <p class="my-5">You haven't bid in an auction.</p>
+        <p class="my-5">There are no bids.</p>
         {% endfor %}
     </div>
 
-    <h2>My listings</h2>
+    <h2 class="mt-4">My listings</h2>
 
-    <form class="row g-3 my-1" action="" method="post">
+    <form class="row g-3 my-1" action="{% url 'myActiveListings' %}" method="post">
         {% csrf_token %}
         <div class="col-auto">
-            <label for="isActive" class="form-label">Active or closed auctions?</label>
+            <label for="is_active" class="form-label">Active or closed auctions?</label>
         </div>
         <div class="col-auto">
-            <select class="form-select form-select-sm" name="category" aria-label="Select a category">
-                <!-- ARREGLAR ACÁ -->
-                <!-- <option selected disabled>Open category menu</option> -->
-                <!-- ARREGLAR ACÁ -->
-                {% for category in categories %}
-                <option value="{{ category.name }}">{{ category.name }}</option>
-                {% endfor %}
+            <select class="form-select form-select-sm" name="is_active" aria-label="Active or closed auction?">
+                <option value="True">Active</option>
+                <option value="False">Closed</option>
             </select>
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary btn-sm">Select</button>
         </div>
     </form>
-
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
         {% for listing in my_listings %}
         <div class="col">
@@ -108,7 +96,7 @@
         </div>
         {% empty %}
         <br>
-        <p class="my-5">You haven't post any listing.</p>
+        <p class="my-5">There are no listings.</p>
         {% endfor %}
     </div>
 

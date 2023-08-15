@@ -105,10 +105,13 @@ def addBid(request, id):
     bidData = Bids.objects.filter(listing=id).first()
     bid = request.POST["newBid"]
 
+    # For time and duration
+    end_date = listingData.start_date + datetime.timedelta(days=listingData.duration)
+
     if float(bid) >= listingData.start_bid and currentUser != listingData.user:
         try:
             currentBid = float(bidData.amount)
-            bidTotal = len(Bids.objects.filter(listing=id))
+            bidTotal = len(Bids.objects.filter(listing=id)) + 1
 
             if float(bid) > currentBid:
                 newBid = Bids(
@@ -129,6 +132,7 @@ def addBid(request, id):
                         "update": True,
                         "bids": newBid,
                         "bidTotal": bidTotal,
+                        "end_date": end_date.date,
                     },
                 )
             else:
@@ -141,6 +145,7 @@ def addBid(request, id):
                         "update": False,
                         "bids": bidData,
                         "bidTotal": bidTotal,
+                        "end_date": end_date.date,
                     },
                 )
 
@@ -165,6 +170,7 @@ def addBid(request, id):
                     "update": True,
                     "bids": newBid,
                     "bidTotal": bidTotal,
+                    "end_date": end_date.date,
                 },
             )
 
@@ -177,6 +183,7 @@ def addBid(request, id):
                 "message": "Bid was not updated -bid has to be equal or higher than starting price. Auction owner cannot bid.",
                 "update": False,
                 "bids": bidData,
+                "end_date": end_date.date,
             },
         )
 
@@ -346,8 +353,8 @@ def edit_user(request):
         my_listings = Listings.objects.filter(user=currentUser)
         notActives = Listings.objects.filter(user=currentUser, is_active=False)
         # Bid data
-        bidData = Bids.objects.all()
-        bidListings = bidData.filter(user=currentUser)
+        bidData = Bids.objects.filter(user=currentUser).order_by("-datetime")
+        bidListings = bidData
 
         return render(
             request,
@@ -358,3 +365,50 @@ def edit_user(request):
                 "bidListings": bidListings,
             },
         )
+
+
+def myActiveBids(request):
+    if request.method == "POST":
+        currentUser = request.user
+        is_active = request.POST["is_active"]
+
+        my_listings = Listings.objects.filter(user=currentUser)
+
+        # ARREGLAR A QUE SEA PARA TODOS
+        my_active_listings = Listings.objects.filter(is_active=is_active)[0]
+        my_active_bids = Bids.objects.filter(
+            user=currentUser, listing=my_active_listings
+        )
+
+        # REVISAR
+        closed_listings = Listings.objects.filter(is_active=False)[0]
+        won_bids = Bids.objects.filter(user=currentUser, listing=closed_listings)
+
+        return render(
+            request,
+            "auctions/user.html",
+            {
+                "bidListings": my_active_bids,
+                "my_listings": my_listings,
+                "won": won_bids,
+            },
+        )
+
+
+def myActiveListings(request):
+    if request.method == "POST":
+        currentUser = request.user
+        is_active = request.POST["is_active"]
+        my_active_listings = Listings.objects.filter(
+            is_active=is_active, user=currentUser
+        )
+        my_bids = Bids.objects.filter(user=currentUser)
+
+    return render(
+        request,
+        "auctions/user.html",
+        {
+            "my_listings": my_active_listings,
+            "bidListings": my_bids,
+        },
+    )
