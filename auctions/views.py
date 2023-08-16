@@ -7,6 +7,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils import timezone
+from django.db.models import Max, Count
+
 
 from .models import Bids, Comments, User, Category, Listings
 
@@ -352,8 +354,14 @@ def edit_user(request):
         # Listings data
         my_listings = Listings.objects.filter(user=currentUser)
         notActives = Listings.objects.filter(user=currentUser, is_active=False)
-        # Bid data
-        bidData = Bids.objects.filter(user=currentUser).order_by("-datetime")
+        # Bid Data Raw SQL
+        sql = f""" 
+        SELECT * from auctions_bids 
+        WHERE user_id = {currentUser.id} 
+        GROUP BY listing_id 
+        ORDER BY datetime DESC; """
+        bidData = Bids.objects.raw(sql)
+
         bidListings = bidData
 
         return render(
@@ -374,15 +382,25 @@ def myActiveBids(request):
 
         my_listings = Listings.objects.filter(user=currentUser)
 
-        # ARREGLAR A QUE SEA PARA TODOS
-        my_active_listings = Listings.objects.filter(is_active=is_active)[0]
-        my_active_bids = Bids.objects.filter(
-            user=currentUser, listing=my_active_listings
-        )
+        # Bid Data Raw SQL
+        sql = f""" 
+        SELECT * FROM auctions_bids 
+        JOIN auctions_listings ON 
+        auctions_listings.id = auctions_bids.listing_id 
+        WHERE auctions_bids.user_id = {currentUser.id} 
+        AND auctions_listings.is_active = {is_active} 
+        GROUP BY listing_id ORDER BY datetime DESC; """
+        my_active_bids = Bids.objects.raw(sql)
 
-        # REVISAR
-        closed_listings = Listings.objects.filter(is_active=False)[0]
-        won_bids = Bids.objects.filter(user=currentUser, listing=closed_listings)
+        # REVISAR PARA QUE SEAN LOS GANADORES NADA MAS
+        # sql = f"""
+        # SELECT * FROM auctions_bids
+        # JOIN auctions_listings ON
+        # auctions_listings.id = auctions_bids.listing_id
+        # WHERE auctions_bids.user_id = {currentUser.id}
+        # AND auctions_listings.is_active = {is_active}
+        # GROUP BY listing_id ORDER BY datetime DESC; """
+        # my_active_bids = Bids.objects.raw(sql)
 
         return render(
             request,
@@ -390,7 +408,7 @@ def myActiveBids(request):
             {
                 "bidListings": my_active_bids,
                 "my_listings": my_listings,
-                "won": won_bids,
+                # "won": won_bids,
             },
         )
 
