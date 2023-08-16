@@ -1,13 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-
+{% if user.is_authenticated %}
 <div class="container-fluid">
-    <h2>Watchlist</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-4 my-1">
+    <h1>Watchlist</h1>
+    <div class="row row-cols-1 row-cols-md-4 g-4 my-1">
         {% for listing in listings %}
         <div class="col">
-            <div class="card h-100">
+            <div class="card h-100 shadow-sm">
                 <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
@@ -19,19 +19,13 @@
                 </div>
             </div>
         </div>
-
         {% empty %}
-
-        <br>
-
-        <h3>There is nothing in the Watchlist.</h3>
-
+        <p class="text-center my-5">There is nothing in the watchlist.</p>
         {% endfor %}
     </div>
 </div>
-<br>
-{% if user.is_authenticated %}
-<a class="nav-link" href="{% url 'create' %}">Create Listing</a>
-<a class="nav-link" href="{% url 'user' %}">User</a>
+{% else %}
+<p class="text-center my-5">You need to <a href=" {% url 'login' %}">login</a> or <a
+        href="{% url 'register' %}">register.</a></p>
 {% endif %}
 {% endblock %}

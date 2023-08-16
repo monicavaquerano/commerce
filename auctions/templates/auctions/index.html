@@ -1,10 +1,8 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-
 <div class="container-fluid">
-    <h2>Active Listings</h2>
-
+    <h1>Active Listings</h1>
     {% if categories %}
     <form class="row g-3 my-1" action="{% url 'displayCategory' %}" method="post">
         {% csrf_token %}
@@ -13,9 +11,7 @@
         </div>
         <div class="col-auto">
             <select class="form-select form-select-sm" name="category" aria-label="Select a category">
-                <!-- ARREGLAR ACÁ -->
-                <!-- <option selected disabled>Open category menu</option> -->
-                <!-- ARREGLAR ACÁ -->
+                <option value="all" selected>All</option>
                 {% for category in categories %}
                 <option value="{{ category.name }}">{{ category.name }}</option>
                 {% endfor %}
@@ -26,11 +22,10 @@
         </div>
     </form>
     {% endif %}
-
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
         {% for listing in listings %}
         <div class="col">
-            <div class="card h-100">
+            <div class="card h-100 shadow-sm">
                 <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
@@ -42,19 +37,9 @@
                 </div>
             </div>
         </div>
-
         {% empty %}
-
-        <br>
-
-        <h3>There are no active listings.</h3>
-
+        <p class="text-center my-5">There are no active listings.</p>
         {% endfor %}
     </div>
 </div>
-<br>
-{% if user.is_authenticated %}
-<a class="nav-link" href="{% url 'create' %}">Create Listing</a>
-<a class="nav-link" href="{% url 'user' %}">User</a>
-{% endif %}
 {% endblock %}

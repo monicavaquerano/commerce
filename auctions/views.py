@@ -6,8 +6,6 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.utils import timezone
-from django.db.models import Max, Count
 
 
 from .models import Bids, Comments, User, Category, Listings
@@ -100,12 +98,11 @@ def addComment(request, id):
     return HttpResponseRedirect(reverse("listing", args=(id,)))
 
 
-# REVISAR
 def addBid(request, id):
     currentUser = request.user
     listingData = Listings.objects.get(pk=id)
     bidData = Bids.objects.filter(listing=id).first()
-    bid = request.POST["newBid"]
+    bid = request.POST["newBid"].strip()
 
     # For time and duration
     end_date = listingData.start_date + datetime.timedelta(days=listingData.duration)
@@ -191,15 +188,18 @@ def addBid(request, id):
 
 
 def displayWatchlist(request):
-    currentUser = request.user
-    listings = currentUser.watchlist.all()
-    return render(
-        request,
-        "auctions/watchlist.html",
-        {
-            "listings": listings,
-        },
-    )
+    if request.method == "GET":
+        return render(request, "auctions/watchlist.html")
+    else:
+        currentUser = request.user
+        listings = currentUser.watchlist.filter(is_active=True)
+        return render(
+            request,
+            "auctions/watchlist.html",
+            {
+                "listings": listings,
+            },
+        )
 
 
 def addWatchlist(request, id):
@@ -219,15 +219,24 @@ def removeWatchlist(request, id):
 def displayCategory(request):
     if request.method == "POST":
         categoryFromForm = request.POST["category"]
-        category = Category.objects.get(name=categoryFromForm)
-        active_listings = Listings.objects.filter(is_active=True, category=category)
-        categories = Category.objects.all()
 
-        return render(
-            request,
-            "auctions/index.html",
-            {"listings": active_listings, "categories": categories},
-        )
+        if categoryFromForm != "all":
+            category = Category.objects.get(name=categoryFromForm)
+            active_listings = Listings.objects.filter(is_active=True, category=category)
+            categories = Category.objects.all()
+            return render(
+                request,
+                "auctions/index.html",
+                {"listings": active_listings, "categories": categories},
+            )
+        else:
+            active_listings = Listings.objects.filter(is_active=True)
+            categories = Category.objects.all()
+            return render(
+                request,
+                "auctions/index.html",
+                {"listings": active_listings, "categories": categories},
+            )
 
 
 def login_view(request):
@@ -286,23 +295,34 @@ def register(request):
 
 
 def create_categories(request):
+    categories = Category.objects.all()
     if request.method == "GET":
-        categories = Category.objects.all()
-
         return render(
             request,
             "auctions/categories.html",
             {"categories": categories},
         )
     else:
-        category = request.POST["category"]
-        new_category = Category(name=category)
-        new_category.save()
-        return HttpResponseRedirect(
-            reverse(
-                "categories",
+        category = request.POST["category"].strip().capitalize()
+        try:
+            existing_category = Category.objects.get(name=category)
+            if existing_category:
+                return render(
+                    request,
+                    "auctions/categories.html",
+                    {
+                        "message": "Category already exists.",
+                        "categories": categories,
+                    },
+                )
+        except:
+            new_category = Category(name=category)
+            new_category.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "categories",
+                )
             )
-        )
 
 
 def create_listing(request):
@@ -316,10 +336,10 @@ def create_listing(request):
         )
     else:
         # Get data from form
-        title = request.POST["title"]
-        description = request.POST["description"]
-        start_bid = request.POST["start_bid"]
-        image_url = request.POST["image_url"]
+        title = request.POST["title"].strip().capitalize()
+        description = request.POST["description"].strip().capitalize()
+        start_bid = request.POST["start_bid"].strip()
+        image_url = request.POST["image_url"].strip()
         category = request.POST["category"]
         duration = request.POST["duration"]
 
@@ -346,33 +366,32 @@ def create_listing(request):
         return HttpResponseRedirect(reverse(index))
 
 
-# @login_required
+# User
 def edit_user(request):
     if request.method == "GET":
-        # Current user
-        currentUser = request.user
-        # Listings data
-        my_listings = Listings.objects.filter(user=currentUser)
-        notActives = Listings.objects.filter(user=currentUser, is_active=False)
-        # Bid Data Raw SQL
-        sql = f""" 
-        SELECT * from auctions_bids 
-        WHERE user_id = {currentUser.id} 
-        GROUP BY listing_id 
-        ORDER BY datetime DESC; """
-        bidData = Bids.objects.raw(sql)
+        try:
+            # Current user
+            currentUser = request.user
+            # Listings data
+            my_listings = Listings.objects.filter(user=currentUser)
+            # Bid Data Raw SQL
+            sql = f""" 
+            SELECT * from auctions_bids 
+            WHERE user_id = {currentUser.id} 
+            GROUP BY listing_id 
+            ORDER BY datetime DESC; """
+            my_bids = Bids.objects.raw(sql)
 
-        bidListings = bidData
-
-        return render(
-            request,
-            "auctions/user.html",
-            {
-                "my_listings": my_listings,
-                "notActives": notActives,
-                "bidListings": bidListings,
-            },
-        )
+            return render(
+                request,
+                "auctions/user.html",
+                {
+                    "my_listings": my_listings,
+                    "bidListings": my_bids,
+                },
+            )
+        except:
+            return render(request, "auctions/user.html")
 
 
 def myActiveBids(request):
@@ -382,35 +401,44 @@ def myActiveBids(request):
 
         my_listings = Listings.objects.filter(user=currentUser)
 
-        # Bid Data Raw SQL
-        sql = f""" 
-        SELECT * FROM auctions_bids 
-        JOIN auctions_listings ON 
-        auctions_listings.id = auctions_bids.listing_id 
-        WHERE auctions_bids.user_id = {currentUser.id} 
-        AND auctions_listings.is_active = {is_active} 
-        GROUP BY listing_id ORDER BY datetime DESC; """
-        my_active_bids = Bids.objects.raw(sql)
+        if is_active != "won":
+            # Bid Data Raw SQL
+            sql = f""" 
+            SELECT * FROM auctions_bids 
+            JOIN auctions_listings ON 
+            auctions_listings.id = auctions_bids.listing_id 
+            WHERE auctions_bids.user_id = {currentUser.id} 
+            AND auctions_listings.is_active = {is_active} 
+            GROUP BY listing_id ORDER BY datetime DESC; """
+            my_active_bids = Bids.objects.raw(sql)
 
-        # REVISAR PARA QUE SEAN LOS GANADORES NADA MAS
-        # sql = f"""
-        # SELECT * FROM auctions_bids
-        # JOIN auctions_listings ON
-        # auctions_listings.id = auctions_bids.listing_id
-        # WHERE auctions_bids.user_id = {currentUser.id}
-        # AND auctions_listings.is_active = {is_active}
-        # GROUP BY listing_id ORDER BY datetime DESC; """
-        # my_active_bids = Bids.objects.raw(sql)
+            return render(
+                request,
+                "auctions/user.html",
+                {
+                    "bidListings": my_active_bids,
+                    "my_listings": my_listings,
+                },
+            )
 
-        return render(
-            request,
-            "auctions/user.html",
-            {
-                "bidListings": my_active_bids,
-                "my_listings": my_listings,
-                # "won": won_bids,
-            },
-        )
+        else:
+            # Bid Data Raw SQL
+            sql = f"""
+            SELECT * FROM auctions_bids
+            JOIN auctions_listings ON
+            auctions_listings.id = auctions_bids.listing_id
+            WHERE auctions_bids.user_id = {currentUser.id}
+            AND auctions_listings.is_active = False
+            GROUP BY listing_id ORDER BY datetime DESC, amount ASC; """
+            won_bids = Bids.objects.raw(sql)
+            return render(
+                request,
+                "auctions/user.html",
+                {
+                    "bidListings": won_bids,
+                    "my_listings": my_listings,
+                },
+            )
 
 
 def myActiveListings(request):

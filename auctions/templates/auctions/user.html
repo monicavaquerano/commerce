@@ -8,6 +8,8 @@
     {% endif %}
     <h1>My account</h1>
     <div class="container">
+        <h2>My info</h2>
+        <!-- ARREGLAR ESTO Y ARREGLAR QUE SE CIERRE SOLA -->
         <label for="">Username: </label>
         <p>{{ user.get_username }}</p>
 
@@ -22,15 +24,15 @@
     </div>
 
     <h2>My bids</h2>
-
     <form class="row g-3 my-1" action="{% url 'myActiveBids' %}" method="post">
         {% csrf_token %}
         <div class="col-auto">
-            <label for="is_active" class="form-label">Active or closed auctions?</label>
+            <label for="is_active" class="form-label">Active, won or closed auctions?</label>
         </div>
         <div class="col-auto">
             <select class="form-select form-select-sm" name="is_active" aria-label="Active or closed auctions?">
                 <option value="True" selected>Active</option>
+                <option value="won">Won</option>
                 <option value="False">Closed</option>
             </select>
         </div>
@@ -38,11 +40,10 @@
             <button type="submit" class="btn btn-primary btn-sm">Select</button>
         </div>
     </form>
-    {{ closed }}
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
         {% for listing in bidListings %}
         <div class="col">
-            <div class="card h-100">
+            <div class="card h-100 shadow-sm">
                 <img src="{{ listing.listing.image }}" class="card-img-top" alt="{{ listing.listing.description }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.listing.title }}</h5>
@@ -55,15 +56,12 @@
                 </div>
             </div>
         </div>
-
         {% empty %}
-        <br>
-        <p class="my-5">There are no bids.</p>
+        <p class="text-center my-5">There are no bids.</p>
         {% endfor %}
     </div>
 
     <h2 class="mt-4">My listings</h2>
-
     <form class="row g-3 my-1" action="{% url 'myActiveListings' %}" method="post">
         {% csrf_token %}
         <div class="col-auto">
@@ -82,7 +80,7 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
         {% for listing in my_listings %}
         <div class="col">
-            <div class="card h-100">
+            <div class="card h-100 shadow-sm">
                 <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.description }}">
                 <div class="card-body">
                     <h5 class="card-title">{{ listing.title }}</h5>
@@ -95,17 +93,12 @@
             </div>
         </div>
         {% empty %}
-        <br>
-        <p class="my-5">There are no listings.</p>
+        <p class="text-center my-5">There are no listings.</p>
         {% endfor %}
     </div>
-
-
-    <!-- Not authenticated -->
-    {% else %}
-    <br>
-    <p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a></p>
-
-    {% endif %}
 </div>
+{% else %}
+<p class="text-center my-5">You need to <a href="{% url 'login' %}">login</a> or <a
+        href="{% url 'register' %}">register.</a></p>
+{% endif %}
 {% endblock %}

@@ -1,11 +1,10 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+{% if user.is_authenticated %}
 <div class="container-fluid">
-
-    <h2>Create New Listing</h2>
-
-    <div class="container my-5">
+    <h1>Create New Listing</h1>
+    <div class="container my-4">
         <form action="{% url 'create' %}" method="post">
             {% csrf_token %}
             <div class="mb-3">
@@ -42,7 +41,6 @@
                     {% endfor %}
                 </select>
             </div>
-
             <div class="mb-3">
                 <label for="duration" class="form-label">Duration</label>
                 <select class="form-select" name="duration" aria-label="Select a duration" required>
@@ -56,5 +54,8 @@
         </form>
     </div>
 </div>
-
+{% else %}
+<p class="text-center my-5">You need to <a href="{% url 'login' %}">login</a> or <a
+        href="{% url 'register' %}">register.</a></p>
+{% endif %}
 {% endblock %}
