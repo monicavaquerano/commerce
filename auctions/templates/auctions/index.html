@@ -22,7 +22,7 @@
         </div>
     </form>
     {% endif %}
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 my-1">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 my-1">
         {% for listing in listings %}
         <div class="col">
             <div class="card h-100 shadow-sm">
@@ -37,6 +37,7 @@
                 </div>
             </div>
         </div>
+
         {% empty %}
         <p class="text-center my-5">There are no active listings.</p>
         {% endfor %}

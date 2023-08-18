@@ -19,10 +19,10 @@
                 </div>
             </div>
         </div>
-        {% empty %}
-        <p class="text-center my-5">There is nothing in the watchlist.</p>
-        {% endfor %}
     </div>
+    {% empty %}
+    <p class="text-center my-5">There is nothing in the watchlist.</p>
+    {% endfor %}
 </div>
 {% else %}
 <p class="text-center my-5">You need to <a href=" {% url 'login' %}">login</a> or <a

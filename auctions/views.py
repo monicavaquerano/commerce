@@ -368,10 +368,11 @@ def create_listing(request):
 
 # User
 def edit_user(request):
+    # Current user
+    currentUser = request.user
+
     if request.method == "GET":
         try:
-            # Current user
-            currentUser = request.user
             # Listings data
             my_listings = Listings.objects.filter(user=currentUser)
             # Bid Data Raw SQL
@@ -392,6 +393,17 @@ def edit_user(request):
             )
         except:
             return render(request, "auctions/user.html")
+    else:
+        username = request.POST["username"].strip()
+        first_name = request.POST["first_name"].strip()
+        last_name = request.POST["last_name"].strip()
+        email = request.POST["email"].strip()
+
+        User.objects.filter(id=currentUser.id).update(
+            username=username, first_name=first_name, last_name=last_name, email=email
+        )
+
+        return HttpResponseRedirect(reverse("user"))
 
 
 def myActiveBids(request):
