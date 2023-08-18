@@ -20,4 +20,5 @@ urlpatterns = [
     path("closeAuction/<int:id>", views.closeAuction, name="closeAuction"),
     path("myActiveListings", views.myActiveListings, name="myActiveListings"),
     path("myActiveBids", views.myActiveBids, name="myActiveBids"),
+    path("changePSW", views.changePSW, name="changePSW"),
 ]

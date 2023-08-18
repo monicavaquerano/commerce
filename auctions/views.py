@@ -1,9 +1,10 @@
 import datetime
 from django.contrib.auth import authenticate, login, logout
 
-# from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -402,8 +403,33 @@ def edit_user(request):
         User.objects.filter(id=currentUser.id).update(
             username=username, first_name=first_name, last_name=last_name, email=email
         )
-
+        messages.success(request, "Your data has been updated!")
         return HttpResponseRedirect(reverse("user"))
+
+
+@login_required
+def changePSW(request):
+    if request.method == "POST":
+        currentUser = request.user
+        current_psw = request.POST["current_psw"]
+        new_psw = request.POST["new_psw"]
+        confirmation = request.POST["confirmation"]
+
+        checkPSW = currentUser.check_password(current_psw)
+
+        if checkPSW:
+            if new_psw != confirmation:
+                messages.error(
+                    request, "Your new password and confirmation don't match!"
+                )
+                return HttpResponseRedirect(reverse("user"))
+            else:
+                currentUser.set_password(new_psw)
+                messages.success(request, "Your password has been changed!")
+                return HttpResponseRedirect(reverse("user"))
+        else:
+            messages.error(request, "Password invalid!")
+            return HttpResponseRedirect(reverse("user"))
 
 
 def myActiveBids(request):

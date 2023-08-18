@@ -15,6 +15,13 @@
         {% endif %}
         {% endif %}
 
+        <!-- {% for message in messages %}
+        {% if message.tags %}
+        <div class="messages alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}{% endif %}"
+            role="alert">{{ message }}</div>
+        {% endfor %} -->
+
+
         {% if not listing.is_active %}
         {% if user == listing.user %}
         <div class="alert alert-info" role="alert">

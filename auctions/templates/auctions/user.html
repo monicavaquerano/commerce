@@ -3,9 +3,13 @@
 {% block body %}
 {% if user.is_authenticated %}
 <div class="container-fluid">
-    {% if message %}
-    {{ message }}
-    {% endif %}
+
+    {% for message in messages %}
+    {% if message.tags %}
+    <div class="messages alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}{% endif %}"
+        role="alert">{{ message }}</div>
+    {% endfor %}
+
     <h1>My account</h1>
     <h2>My info</h2>
     <div class="container mb-3">
@@ -23,22 +27,54 @@
                     <input type="text" name="first_name" class="form-control" id="first_name"
                         aria-describedby="first_nameHelp" value="{{ user.first_name }}">
                 </div>
-
                 <div class="col mb-3">
                     <label for="last_name" class="form-label">Last Name</label>
                     <input type="text" name="last_name" class="form-control" id="last_name"
                         aria-describedby="last_nameHelp" value="{{ user.last_name }}">
                 </div>
             </div>
-
             <div class="mb-4">
                 <label for="email" class="form-label">E-Mail</label>
                 <input type="text" name="email" class="form-control" id="email" aria-describedby="emailHelp"
                     value="{{ user.email }}">
             </div>
-
-            <button type="submit" class="btn btn-primary">Edit</button>
+            <button type="submit" class="btn btn-primary me-3">Edit</button>
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pswModal"
+                data-bs-whatever="psw">Change password</button>
         </form>
+
+        <!-- MODAL -->
+        <div class="modal fade" id="pswModal" tabindex="-1" aria-labelledby="pswModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="pswModalLabel">Change password</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'changePSW' %}" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="current_psw" class="col-form-label">Current password</label>
+                                <input type="password" class="form-control" name="current_psw" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_psw" class="col-form-label">New password</label>
+                                <input type="password" class="form-control" name="new_psw" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="confirmation" class="col-form-label">Confirm new password</label>
+                                <input type="password" class="form-control" name="confirmation" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Change password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <h2>My bids</h2>
