@@ -13,6 +13,7 @@ from .models import Bids, Comments, User, Category, Listings
 
 
 def index(request):
+    # active_listings = Listings.objects.filter(is_active=True).order_by("-start_date")
     active_listings = Listings.objects.filter(is_active=True)
     categories = Category.objects.all()
 
@@ -119,10 +120,8 @@ def addBid(request, id):
                     user=currentUser,
                     listing=listingData,
                 )
-
                 # Insert the object our database
                 newBid.save()
-
                 return render(
                     request,
                     "auctions/listing.html",
@@ -148,10 +147,8 @@ def addBid(request, id):
                         "end_date": end_date.date,
                     },
                 )
-
         except AttributeError:
             bidTotal = 1
-
             newBid = Bids(
                 amount=bid,
                 user=currentUser,
@@ -173,7 +170,6 @@ def addBid(request, id):
                     "end_date": end_date.date,
                 },
             )
-
     else:
         return render(
             request,
@@ -207,6 +203,7 @@ def addWatchlist(request, id):
     listingData = Listings.objects.get(pk=id)
     currentUser = request.user
     listingData.watchers.add(currentUser)
+
     return HttpResponseRedirect(reverse("listing", args=(id,)))
 
 
@@ -214,6 +211,7 @@ def removeWatchlist(request, id):
     listingData = Listings.objects.get(pk=id)
     currentUser = request.user
     listingData.watchers.remove(currentUser)
+
     return HttpResponseRedirect(reverse("listing", args=(id,)))
 
 
@@ -369,13 +367,12 @@ def create_listing(request):
 
 # User
 def edit_user(request):
-    # Current user
     currentUser = request.user
-
     if request.method == "GET":
         try:
             # Listings data
             my_listings = Listings.objects.filter(user=currentUser)
+
             # Bid Data Raw SQL
             sql = f""" 
             SELECT * from auctions_bids 
@@ -407,6 +404,7 @@ def edit_user(request):
         return HttpResponseRedirect(reverse("user"))
 
 
+# Arreglar los mensajes en las demas cosas y arreglar lo del tiempo
 @login_required
 def changePSW(request):
     if request.method == "POST":
@@ -415,9 +413,11 @@ def changePSW(request):
         new_psw = request.POST["new_psw"]
         confirmation = request.POST["confirmation"]
 
+        # Check if current password is valid
         checkPSW = currentUser.check_password(current_psw)
 
         if checkPSW:
+            # Check if new password and confirmation match
             if new_psw != confirmation:
                 messages.error(
                     request, "Your new password and confirmation don't match!"
