@@ -19,14 +19,11 @@ def schedule_closing():
         now = datetime.datetime.now().date()
 
         if end_date < now:
-            listing.objects.update(is_active=False)
-            #      User.objects.filter(id=currentUser.id).update(
-            #       username=username, first_name=first_name, last_name=last_name, email=email
-            #     )
+            # SEGUIR TRABAJANDO EN ESTO SI NO FUNCIONA
+            # listing.objects.update(is_active=False)
+            listingData.is_active = False
+            listingData.save()
 
-            # SEGUIR TRABAJANDO EN ESTO
-
-            print("Estoy vencido!")
         else:
             print(f"Todavía no venzo! Venzo el {end_date}, y hoy es {now}")
 
