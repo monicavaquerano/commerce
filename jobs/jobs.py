@@ -27,8 +27,6 @@ def schedule_closing():
         else:
             print(f"Todavía no venzo! Venzo el {end_date}, y hoy es {now}")
 
-    print("I'm working!")
-
 
 # def closeAuction(request, id):
 #     listingData = Listings.objects.get(pk=id)

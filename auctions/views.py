@@ -375,10 +375,12 @@ def edit_user(request):
 
             # Bid Data Raw SQL
             sql = f""" 
-            SELECT * from auctions_bids 
-            WHERE user_id = {currentUser.id} 
-            GROUP BY listing_id 
-            ORDER BY datetime DESC; """
+            SELECT * FROM auctions_bids 
+            JOIN auctions_listings ON 
+            auctions_listings.id = auctions_bids.listing_id 
+            WHERE auctions_bids.user_id = {currentUser.id} 
+            AND auctions_listings.is_active = True 
+            GROUP BY listing_id ORDER BY datetime DESC; """
             my_bids = Bids.objects.raw(sql)
 
             return render(
